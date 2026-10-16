@@ -7,6 +7,7 @@ window.TUNING = {
   maxRollSpeed: 7.5,       // m/s ground
   downhillCap: 10,         // m/s on downhill momentum
   groundAccel: 22, groundDecel: 28, airAccel: 12, // m/s^2
+  maxWalkableSlopeDeg: 35, // GDD: steeper surfaces are walls
   terminalFall: 14,        // m/s
   jumpHeldHeight: 3.0,     // m (held 200 ms)
   jumpTapHeight: 2.2,      // m (tap)

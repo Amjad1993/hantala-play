@@ -33,7 +33,7 @@ class Play extends Phaser.Scene {
     }
     const sensor = (x,y,r,tex,label,extra) => { const s = this.matter.add.image(X(x), Y(y), tex, null, {isStatic:true, isSensor:true, label, shape:{type:'circle', radius:X(r)}}); Object.assign(s, extra); return s; };
     this.drops = L.dewdrops.map((d,i) => sensor(d.x, d.y, L.dropRadius, 'dew', 'dew', {idx:i}));
-    this.feathers = L.feathers.map((f,i) => sensor(f.x, f.y, 0.4, 'feather', 'feather', {idx:i}));
+    this.feathers = L.feathers.map((f,i) => sensor(f.x, f.y, f.r||0.4, 'feather', 'feather', {idx:i}));
     this.nests = L.checkpoints.map(c => sensor(c.x, c.y + 0.3, c.r, 'nest', 'nest', {cp:c}));
     const gl = L.goal; this.add.image(X(gl.x), Y(gl.y + 0.6), 'goal');
     this.matter.add.rectangle(X(gl.x), Y(gl.y + gl.h/2), X(gl.w), X(gl.h), {isStatic:true, isSensor:true, label:'goal'});
@@ -80,9 +80,10 @@ class Play extends Phaser.Scene {
   onPair(p, start){
     const a = p.bodyA, b = p.bodyB, o = a.label==='duck' ? b : b.label==='duck' ? a : null; if (!o) return;
     if (o.label === 'ground' || (o.parent && o.parent.label === 'ground')) {
-      const sup = p.collision.supports || p.contacts || [];
-      const s = sup[0] && (sup[0].vertex || sup[0]);
-      if (!s || s.y > this.duck.y + X(T.duckRadius) * 0.3) this.st.lastGround = this.time.now;
+      // walkable only if surface normal is within maxWalkableSlopeDeg of up; steeper = wall (no ground accel, no jump)
+      const n = p.collision.normal, sgn = (a.label === 'duck') ? 1 : -1; // Matter normal points B->A; orient it surface->duck
+      const ny = n.y * sgn; const ang = Math.acos(Phaser.Math.Clamp(-ny, -1, 1)) * 180 / Math.PI;
+      if (ang <= T.maxWalkableSlopeDeg + 0.5) this.st.lastGround = this.time.now; else this.st.lastWall = this.time.now;
       return;
     }
     if (!start) return;

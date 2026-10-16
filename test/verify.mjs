@@ -17,7 +17,7 @@ await load();
 R.level = await pg.evaluate(() => { const L = window.__hantala.cache.json.get('level'); return {drops:L.dewdrops.length, feathers:L.feathers.length, spawn:L.spawn, cps:L.checkpoints, goal:L.goal, x1:L.bounds.x1}; });
 R.spawnState = await st(); await pg.screenshot({path:`${OUT}/01-spawn.png`});
 // --- scripted playthrough: hold right, jump at beats
-const beats = [38.6, 45.9, 87.4, 110.6];
+const beats = [38.6, 45.9, 95.6, 118.6];
 await pg.keyboard.down('ArrowRight'); let t0 = Date.now(), log = [], bi = 0, shot2 = false;
 while (Date.now() - t0 < 60000) { const s = await st(); if (s.won) break;
   if (bi < beats.length && s.x >= beats[bi] && s.x < beats[bi] + 2) { await pg.keyboard.down('Space'); await sleep(200); await pg.keyboard.up('Space'); log.push(['jump', s.x, s.vx]); bi++; }
@@ -28,17 +28,17 @@ while (Date.now() - t0 < 60000) { const s = await st(); if (s.won) break;
 await pg.keyboard.up('ArrowRight');
 R.run = {...await st(), wall:(Date.now()-t0)/1000, log}; await sleep(300); await pg.screenshot({path:`${OUT}/05-results.png`});
 // --- G gap: standstill vs max speed
-await load(); await tp(87.9, 1.0); await sleep(200); await pg.keyboard.down('Space'); await sleep(200); await pg.keyboard.up('Space'); await sleep(1400);
+await load(); await tp(95.9, 1.0); await sleep(200); await pg.keyboard.down('Space'); await sleep(200); await pg.keyboard.up('Space'); await sleep(1400);
 R.gapStandstill = await st();
-await load(); await tp(78, 0, 7.5); await pg.keyboard.down('ArrowRight'); let s;
-for (let i=0;i<200;i++){ s = await st(); if (s.x >= 87.4) break; await sleep(10); }
+await load(); await tp(86, -0.3, 7.5); await pg.keyboard.down('ArrowRight'); let s;
+for (let i=0;i<200;i++){ s = await st(); if (s.x >= 95.6) break; await sleep(10); }
 R.gapLaunchSpeed = s.vx; await pg.keyboard.down('Space'); await sleep(200); await pg.keyboard.up('Space'); await sleep(250); await pg.screenshot({path:`${OUT}/03-gap-jump.png`});
 await sleep(1200); await pg.keyboard.up('ArrowRight'); R.gapMaxSpeed = await st();
-// --- D pit: exitable without jumping?
-await load(); await tp(48.2, -1.5); await sleep(300); await pg.keyboard.down('ArrowRight'); await sleep(3500); await pg.keyboard.up('ArrowRight'); R.pitExit = await st();
+// --- D pit: exitable without jumping (standstill start)
+await load(); await tp(48.5, -1.55); await sleep(300); await pg.keyboard.down('ArrowRight'); await sleep(3500); await pg.keyboard.up('ArrowRight'); R.pitExit = await st();
 await load(); await tp(44, 1.5, 7.5); await pg.keyboard.down('ArrowRight'); await sleep(2500); await pg.keyboard.up('ArrowRight'); R.pitExitWithSpeed = await st();
 // --- thorns: kill + respawn at N2, drops kept
-await load(); await tp(103.5, 0.6); await pg.keyboard.down('ArrowRight'); await sleep(1500);
+await load(); await tp(111.5, 0.6); await pg.keyboard.down('ArrowRight'); await sleep(1500);
 let pre = await st(); for (let i=0;i<300;i++){ pre = await st(); if (pre.dead || pre.deaths) break; await sleep(5); }
 const tk = Date.now(); let post; for (let i=0;i<200;i++){ post = await st(); if (!post.dead) break; await sleep(10); }
 R.thorns = {preDeath:pre, respawnMs:Date.now()-tk, afterRespawn:post}; await pg.keyboard.up('ArrowRight');
