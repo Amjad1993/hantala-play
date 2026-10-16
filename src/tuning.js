@@ -20,6 +20,12 @@ window.TUNING = {
   respawnDelayMs: 300,     // (proto) must be <= 600 per spec
   dragFullSpeedPx: 60,     // (proto) drag distance for full analog roll
   density: 0.001, friction: 0.6, restitution: 0.05,
+  // performance (render + physics budget)
+  perf: { maxRenderScale: 1.5,      // cap on devicePixelRatio for the internal canvas
+          maxRenderPixels: 1280*720, // internal pixel budget; GPU upscales to the screen
+          positionIterations: 6, velocityIterations: 4, // Matter defaults, set explicitly
+          maxStepsPerFrame: 5,
+          downgradeBelowFps: 50 }, // adaptive: drop to render scale 1 if 2 s avg fps < this     // fixed 60 Hz physics catch-up limit
   // debug toggles (debug menu: press ` or tap the DBG button)
   debug: { coyote: true, jumpBuffer: true, showBodies: false }
 };
